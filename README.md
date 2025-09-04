@@ -1,4 +1,3 @@
-# colab_error_logger
 The Error Counter tracks how often my code breaks. Each crash doesn’t just log an error — it counts toward a spanking 💥 for some good old-fashioned impact play. Debugging has never been this fun (or this painful).
 
 The Impact Counter is a simple Python utility (built for Jupyter / Google Colab) that logs when your code errors out, counts the failures, and gives you analytics over time. This is also perfect for:
