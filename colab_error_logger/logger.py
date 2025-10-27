@@ -31,7 +31,7 @@ class ErrorLogger:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_name TEXT,
                 error_type TEXT,
-                date TEXT
+                timestamp TEXT
             )
         ''')
         conn.commit()
@@ -53,7 +53,7 @@ class ErrorLogger:
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            INSERT INTO errors (session_name, error_type, date)
+            INSERT INTO errors (session_name, error_type, timestamp)
             VALUES (?, ?, ?)
         ''', (self.session_name, error_type, datetime.utcnow().date().isoformat()))
         conn.commit()
