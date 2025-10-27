@@ -24,20 +24,22 @@ class ErrorLogger:
         self._install_hook()
 
     def _setup_db(self):
+        """Create the errors table if it doesn’t exist."""
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            CREATE TABLE errors (
+            CREATE TABLE IF NOT EXISTS errors (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_name TEXT,
                 error_type TEXT,
-                timestamp TEXT
+                date TEXT
             )
         ''')
         conn.commit()
         conn.close()
 
     def _install_hook(self):
+        """Attach a custom IPython exception handler."""
         if InteractiveShell is not None:
             shell = InteractiveShell.instance()
 
@@ -50,10 +52,11 @@ class ErrorLogger:
             shell.set_custom_exc((Exception,), custom_exc)
 
     def log_error(self, error_type: str, tb: str):
+        """Insert a new error record into the database."""
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            INSERT INTO errors (session_name, error_type, timestamp)
+            INSERT INTO errors (session_name, error_type, date)
             VALUES (?, ?, ?)
         ''', (self.session_name, error_type, datetime.utcnow().date().isoformat()))
         conn.commit()
