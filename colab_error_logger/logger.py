@@ -27,12 +27,11 @@ class ErrorLogger:
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            CREATE TABLE IF NOT EXISTS errors (
+            CREATE TABLE errors (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_name TEXT,
                 error_type TEXT,
-                timestamp TEXT,
-                traceback TEXT
+                timestamp TEXT
             )
         ''')
         conn.commit()
@@ -54,9 +53,9 @@ class ErrorLogger:
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            INSERT INTO errors (session_name, error_type, timestamp, traceback)
-            VALUES (?, ?, ?, ?)
-        ''', (self.session_name, error_type, datetime.utcnow().isoformat(), tb))
+            INSERT INTO errors (session_name, error_type, timestamp)
+            VALUES (?, ?, ?)
+        ''', (self.session_name, error_type, datetime.utcnow().date().isoformat()))
         conn.commit()
         conn.close()
 
