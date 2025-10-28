@@ -30,6 +30,7 @@ class ErrorLogger:
         c.execute('''
             CREATE TABLE IF NOT EXISTS errors (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_type TEXT,
                 session_name TEXT,
                 error_type TEXT,
                 date TEXT
@@ -56,8 +57,8 @@ class ErrorLogger:
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            INSERT INTO errors (session_name, error_type, date)
-            VALUES (?, ?, ?)
+            INSERT INTO errors ("techie", session_name, error_type, date)
+            VALUES (?, ?, ?, ?)
         ''', (self.session_name, error_type, datetime.utcnow().date().isoformat()))
         conn.commit()
         conn.close()
