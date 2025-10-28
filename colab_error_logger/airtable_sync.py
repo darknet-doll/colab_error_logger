@@ -28,9 +28,10 @@ def write_airtable(
 
     # Write to airtable_error_df by iterating through each row from session_log_df
     # (excluding id column).
-    for _, row in df.iloc[:, 1:].iterrows():
+    for _, row in df.iterrows():
         try:
             table.create({
+                "session_type": row["session_name"]
                 "session_name": row["session_name"],
                 "error_type": row["error_type"],
                 "date": row["date"]
