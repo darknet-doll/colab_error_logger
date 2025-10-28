@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from pyairtable import Table
 
-def upload_to_airtable(
+def write_airtable(
     df,
     airtable_token: str = None,
     base_id: str = None,
