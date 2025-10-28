@@ -58,13 +58,13 @@ class ErrorLogger:
             shell.set_custom_exc((Exception,), custom_exc)
 
     def log_error(self, error_type: str, tb: str):
-        """Insert a new error record into the database."""
+        """Insert a new error record into the database where session_type will default to "techie"."""
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            INSERT INTO errors ("techie", session_name, error_type, date)
+            INSERT INTO errors (session_type, session_name, error_type, date)
             VALUES (?, ?, ?, ?)
-        ''', (self.session_name, error_type, datetime.utcnow().date().isoformat()))
+        ''', ("techie", self.session_name, error_type, datetime.utcnow().date().isoformat()))
         conn.commit()
         conn.close()
 
