@@ -24,9 +24,14 @@ class ErrorLogger:
         self._install_hook()
 
     def _setup_db(self):
-        """Create the errors table if it doesn’t exist."""
+        """Create the errors table if it doesn’t exist, and drop previous table if it does exist."""
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
+
+        # Drop the table if it already exists
+        c.execute("DROP TABLE IF EXISTS errors")
+
+        # Create a new table with the desired schema
         c.execute('''
             CREATE TABLE IF NOT EXISTS errors (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
