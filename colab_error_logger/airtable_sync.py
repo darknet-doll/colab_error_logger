@@ -25,19 +25,20 @@ def write_airtable(
 
     # Connecting to airtable dataframe.
     table = Table(airtable_token, base_id, table_name)
-
-    # Write to airtable_error_df by iterating through each row from session_log_df
-    # (excluding id column).
+   
+    # Iterate and write each record
     for _, row in df.iterrows():
+        record_data = {
+            "session_type": row.get("session_type"),
+            "session_name": row.get("session_name"),
+            "error_type": row.get("error_type"),
+            "date": row.get("date"),
+        }
         try:
-            table.create({
-                "session_type": row["session_type"],
-                "session_name": row["session_name"],
-                "error_type": row["error_type"],
-                "date": row["date"]
-            })
+            table.create(record_data)
         except Exception as e:
-            print(f"⚠️ Failed to upload record: {e}")
+            print(f"⚠️ Failed to upload record for session '{record_data.get('session_name')}' "
+                  f"({record_data.get('error_type')}, {record_data.get('date')}): {e}")
 
     print("✅ Upload to Airtable completed.")
 
