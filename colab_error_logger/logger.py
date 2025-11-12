@@ -10,15 +10,15 @@ except ImportError:
 
 
 class ErrorLogger:
-    def __init__(self, session_name: str, db_path: str = "error_logs.db"):
+    def __init__(self, project_name: str, db_path: str = "error_logs.db"):
         """
         Initialize the error logger.
 
         Args:
-            session_name (str): Name of the session (manual).
+            project_name (str): Name of the session (manual).
             db_path (str): SQLite database file path.
         """
-        self.session_name = session_name
+        self.project_name = project_name
         self.db_path = db_path
         self._setup_db()
         self._install_hook()
@@ -35,8 +35,8 @@ class ErrorLogger:
         c.execute('''
             CREATE TABLE IF NOT EXISTS errors (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                session_type TEXT,
-                session_name TEXT,
+                project_type TEXT,
+                project_name TEXT,
                 error_type TEXT,
                 date TEXT
             )
@@ -58,19 +58,19 @@ class ErrorLogger:
             shell.set_custom_exc((Exception,), custom_exc)
 
     def log_error(self, error_type: str, tb: str):
-        """Insert a new error record into the database where session_type will default to "techie"."""
+        """Insert a new error record into the database where project_type will default to "data science notebook"."""
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute('''
-            INSERT INTO errors (session_type, session_name, error_type, date)
+            INSERT INTO errors (project_type, project_name, error_type, date)
             VALUES (?, ?, ?, ?)
-        ''', ("techie", self.session_name, error_type, datetime.utcnow().date().isoformat()))
+        ''', ("data science notebook", self.project_name, error_type, datetime.utcnow().date().isoformat()))
         conn.commit()
         conn.close()
 
 
-def start_logger(session_name: str, db_path: str = "error_logs.db"):
+def start_logger(project_name: str, db_path: str = "error_logs.db"):
     """
     Start error logging for the current session.
     """
-    return ErrorLogger(session_name, db_path)
+    return ErrorLogger(project_name, db_path)
