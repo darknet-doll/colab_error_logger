@@ -9,12 +9,12 @@ def write_airtable(
     base_id: str = None,
     table_name: str = "Errors",
     link_table_name: str = "Impact Conversion",  # Linked table
-    link_field_name: str = "session_type",       # Field in linked table
-    session_type_value: str = "techie"           # Fixed linked record value
+    link_field_name: str = "project_type",       # Field in linked table
+    project_type_value: str = "data science notebook" # Fixed linked record value
 ):
     """
     Uploads a pandas DataFrame of errors to Airtable.
-    Resolves the linked 'session_type' field once ('techie') and reuses its record ID.
+    Resolves the linked 'project_type' field once ('data science notebook') and reuses its record ID.
     Prints a summary only after all records are processed.
     """
     airtable_token = airtable_token or os.getenv("AIRTABLE_TOKEN")
@@ -27,14 +27,14 @@ def write_airtable(
     impact_conversion_table = Table(airtable_token, base_id, link_table_name)
 
     # 🔍 Lookup linked record ID once
-    records = impact_conversion_table.all(formula=f"{{{link_field_name}}} = '{session_type_value}'")
+    records = impact_conversion_table.all(formula=f"{{{link_field_name}}} = '{project_type_value}'")
     if not records:
         raise ValueError(
-            f"No record found for session_type '{session_type_value}' in '{link_table_name}'. "
+            f"No record found for project_type '{project_type_value}' in '{link_table_name}'. "
             "Please ensure the linked record exists."
         )
 
-    techie_id = records[0]["id"]
+    project_type_id = records[0]["id"]
 
     # Track results
     failed_records = []
@@ -42,8 +42,8 @@ def write_airtable(
     # 🚀 Upload records
     for _, row in df.iterrows():
         record_data = {
-            "session_type": [techie_id],
-            "session_name": row.get("session_name"),
+            "project_type": [project_type_id],
+            "project_name": row.get("project_name"),
             "error_type": row.get("error_type"),
             "date": row.get("date"),
         }
@@ -52,7 +52,7 @@ def write_airtable(
             errors_table.create(record_data)
         except Exception as e:
             failed_records.append({
-                "session_name": row.get("session_name"),
+                "project_name": row.get("project_name"),
                 "error_type": row.get("error_type"),
                 "error": str(e)
             })
@@ -61,7 +61,7 @@ def write_airtable(
     if failed_records:
         print("\n⚠️ Some records failed to upload:")
         for r in failed_records:
-            print(f"  - {r['session_name']} ({r['error_type']}): {r['error']}")
+            print(f"  - {r['project_name']} ({r['error_type']}): {r['error']}")
     else:
         print("\n✅ All records uploaded successfully to Airtable.")
 
